@@ -1,0 +1,2 @@
+Unity version:	2020.3.22f1
+Fmod version: 	2.01.11 x64 bits	

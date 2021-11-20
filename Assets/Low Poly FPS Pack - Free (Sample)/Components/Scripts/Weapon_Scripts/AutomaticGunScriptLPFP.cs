@@ -114,8 +114,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	public AudioSource shootAudioSource;
 
 	[Header("UI Components")]
-	public Text timescaleText;
-	public Text currentWeaponText;
 	public Text currentAmmoText;
 	public Text totalAmmoText;
 
@@ -172,8 +170,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		
 		//Save the weapon name
 		storedWeaponName = weaponName;
-		//Get weapon name from string to text
-		currentWeaponText.text = weaponName;
 		//Set total ammo text from total ammo int
 		totalAmmoText.text = ammo.ToString();
 
@@ -248,38 +244,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			randomMuzzleflashValue = Random.Range (minRandomValue, maxRandomValue);
 		}
 
-		//Timescale settings
-		//Change timescale to normal when 1 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha1)) 
-		{
-			Time.timeScale = 1.0f;
-			timescaleText.text = "1.0";
-		}
-		//Change timesccale to 50% when 2 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha2)) 
-		{
-			Time.timeScale = 0.5f;
-			timescaleText.text = "0.5";
-		}
-		//Change timescale to 25% when 3 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha3)) 
-		{
-			Time.timeScale = 0.25f;
-			timescaleText.text = "0.25";
-		}
-		//Change timescale to 10% when 4 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha4)) 
-		{
-			Time.timeScale = 0.1f;
-			timescaleText.text = "0.1";
-		}
-		//Pause game when 5 key is pressed
-		if (Input.GetKeyDown (KeyCode.Alpha5)) 
-		{
-			Time.timeScale = 0.0f;
-			timescaleText.text = "0.0";
-		}
-
 		//Set current ammo text from ammo int
 		currentAmmoText.text = currentAmmo.ToString ();
 
@@ -309,8 +273,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		//If out of ammo
 		if (currentAmmo == 0) 
 		{
-			//Show out of ammo text
-			currentWeaponText.text = "OUT OF AMMO";
 			//Toggle bool
 			outOfAmmo = true;
 			//Auto reload if true
@@ -321,8 +283,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		} 
 		else 
 		{
-			//When ammo is full, show weapon name again
-			currentWeaponText.text = storedWeaponName.ToString ();
 			//Toggle bool
 			outOfAmmo = false;
 			//anim.SetBool ("Out Of Ammo", false);
@@ -339,9 +299,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 
 				//Remove 1 bullet from ammo
 				currentAmmo -= 1;
-
-				shootAudioSource.clip = SoundClips.shootSound;
-				shootAudioSource.Play ();
 
 				if (!isAiming) //if not aiming
 				{

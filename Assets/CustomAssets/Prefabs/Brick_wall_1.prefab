@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2519641751957585884}
   - component: {fileID: 365749910311291670}
   - component: {fileID: 4293896803492020832}
+  - component: {fileID: 131928550999114309}
   m_Layer: 0
   m_Name: Brick_wall_1
   m_TagString: Untagged
@@ -98,3 +99,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.07287342, y: 0.0036231223, z: 0.024499724}
   m_Center: {x: -0.0005321875, y: -0.00007763562, z: 0.012055351}
+--- !u!208 &131928550999114309
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2167247280356453059}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.036000002, y: 0.002, z: 0.012}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.001, y: 0, z: 0.012}
+  m_TimeToStationary: 0.5

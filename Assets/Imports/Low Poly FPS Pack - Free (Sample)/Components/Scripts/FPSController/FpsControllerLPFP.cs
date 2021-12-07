@@ -7,7 +7,6 @@ namespace FPSControllerLPFP
     /// Manages a first person character
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
-    [RequireComponent(typeof(AudioSource))]
     public class FpsControllerLPFP : MonoBehaviour
     {
 #pragma warning disable 649
@@ -17,13 +16,6 @@ namespace FPSControllerLPFP
 
         [Tooltip("The position of the arms and gun camera relative to the fps controller GameObject."), SerializeField]
         private Vector3 armPosition;
-
-		[Header("Audio Clips")]
-        [Tooltip("The audio clip that is played while walking."), SerializeField]
-        private AudioClip walkingSound;
-
-        [Tooltip("The audio clip that is played while running."), SerializeField]
-        private AudioClip runningSound;
 
 		[Header("Movement Settings")]
         [Tooltip("How fast the player moves while walking and strafing."), SerializeField]
@@ -75,10 +67,7 @@ namespace FPSControllerLPFP
             _rigidbody = GetComponent<Rigidbody>();
             _rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
             _collider = GetComponent<CapsuleCollider>();
-            _audioSource = GetComponent<AudioSource>();
 			arms = AssignCharactersCamera();
-            _audioSource.clip = walkingSound;
-            _audioSource.loop = true;
             _rotationX = new SmoothRotation(RotationXRaw);
             _rotationY = new SmoothRotation(RotationYRaw);
             _velocityX = new SmoothVelocity();
@@ -141,12 +130,11 @@ namespace FPSControllerLPFP
             _isGrounded = false;
         }
 			
-        /// Moves the camera to the character, processes jumping and plays sounds every frame.
+        /// Moves the camera to the character and processes jumping every frame.
         private void Update()
         {
 			arms.position = transform.position + transform.TransformVector(armPosition);
             Jump();
-            PlayFootstepSounds();
         }
 
         private void RotateCameraAndCharacter()
@@ -250,25 +238,6 @@ namespace FPSControllerLPFP
             if (!_isGrounded || !input.Jump) return;
             _isGrounded = false;
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
-
-        private void PlayFootstepSounds()
-        {
-            if (_isGrounded && _rigidbody.velocity.sqrMagnitude > 0.1f)
-            {
-                _audioSource.clip = input.Run ? runningSound : walkingSound;
-                if (!_audioSource.isPlaying)
-                {
-                    _audioSource.Play();
-                }
-            }
-            else
-            {
-                if (_audioSource.isPlaying)
-                {
-                    _audioSource.Pause();
-                }
-            }
         }
 			
         /// A helper for assistance with smoothing the camera rotation.

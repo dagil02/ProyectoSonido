@@ -16,20 +16,17 @@ public class GrenadeScript : MonoBehaviour {
 	[Header("Explosion Options")]
 	//Radius of the explosion
 	[Tooltip("The radius of the explosion force")]
-	public float radius = 25.0F;
+	public float radius = 0.0F;
 	//Intensity of the explosion
 	[Tooltip("The intensity of the explosion force")]
 	public float power = 350.0F;
 
 	[Header("Throw Force")]
 	[Tooltip("Minimum throw force")]
-	public float minimumForce = 1500.0f;
+	public float minimumForce = 1000.0f;
 	[Tooltip("Maximum throw force")]
-	public float maximumForce = 2500.0f;
+	public float maximumForce = 1100.0f;
 	private float throwForce;
-
-	[Header("Audio")]
-	public AudioSource impactSound;
 
 	private void Awake () 
 	{
@@ -58,7 +55,7 @@ public class GrenadeScript : MonoBehaviour {
 	private void OnCollisionEnter (Collision collision) 
 	{
 		//Play the impact sound on every collision
-		impactSound.Play ();
+		
 	}
 
 	private IEnumerator ExplosionTimer () 

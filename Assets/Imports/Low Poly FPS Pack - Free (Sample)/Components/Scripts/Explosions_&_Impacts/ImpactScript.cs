@@ -6,7 +6,7 @@ public class ImpactScript : MonoBehaviour {
 
 	[Header("Impact Despawn Timer")]
 	//How long before the impact is destroyed
-	public float despawnTimer = 10.0f;
+	public float despawnTimer = 1.0f;
 
 	[Header("Audio")]
 	public AudioClip[] impactSounds;

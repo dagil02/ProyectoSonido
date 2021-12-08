@@ -14,8 +14,8 @@ public class EnemyController : MonoBehaviour
 
     WanderingAI wander;
 
-    private enum states {move, shoot, granade, run};
-    private states currentState = states.move;
+    private enum states {shoot, run};
+    private states currentState = states.run;
 
     void Awake()
     {
@@ -44,9 +44,9 @@ public class EnemyController : MonoBehaviour
 
     private void changeState()
     {
-        if (currentState != states.move)
+        if (currentState != states.run)
         {
-            currentState = states.move;
+            currentState = states.run;
             anim.Play("Run", 0, 1000);
             time2change = change + Random.Range(0.5f, 5.0f); ;
             agent.enabled = true;

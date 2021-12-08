@@ -27,9 +27,6 @@ namespace FPSControllerLPFP
         [Tooltip("Approximately the amount of time it will take for the player to reach maximum running or walking speed."), SerializeField]
         private float movementSmoothness = 0.125f;
 
-        [Tooltip("Amount of force applied to the player when jumping."), SerializeField]
-        private float jumpForce = 35f;
-
 		[Header("Look Settings")]
         [Tooltip("Rotation speed of the fps controller."), SerializeField]
         private float mouseSensitivity = 7f;
@@ -64,7 +61,8 @@ namespace FPSControllerLPFP
         //Audio
         GameObject feet;
         private bool ismoving = false;
-        private float walkingspeed;
+        private bool isrunning = false;
+        int floor_type = 1; //Stone-0 Grass-1 Earth-2 Wood-3
         /// Initializes the FpsController on start.
         private void Start()
         {
@@ -81,8 +79,7 @@ namespace FPSControllerLPFP
 
             //Audio
             feet = GameObject.Find("Feet");
-            walkingspeed = walkingSpeed * 0.08f;
-            InvokeRepeating("ProcessSteps", 0, walkingspeed);
+            InvokeRepeating("ProcessSteps", 0, 0.4f);
         }
 
         private Transform AssignCharactersCamera()
@@ -136,24 +133,59 @@ namespace FPSControllerLPFP
             // FixedUpdate is used instead of Update because this code is dealing with physics and smoothing.
             RotateCameraAndCharacter();
             MoveCharacter();
+            if (!input.Run && isrunning) //Ha dejado de correr
+            {
+                isrunning = false;
+                CancelInvoke();
+                InvokeRepeating("ProcessSteps", 0, 0.4f);
+            }
             _isGrounded = false;
         }
 			
-        /// Moves the camera to the character and processes jumping every frame.
+        /// Moves the camera to the character
         private void Update()
         {
 			arms.position = transform.position + transform.TransformVector(armPosition);
-            Jump();
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            switch (other.tag)
+            {
+                case "Stone":
+                    floor_type = 0;
+                    break;
+                case "Grass":
+                    floor_type = 1;
+                    break;
+                case "Earth":
+                    floor_type = 2;
+                    break;
+                case "Wood":
+                    floor_type = 3;
+                    break;
+                default:
+                    break;
+            }
+        }
         private void ProcessSteps()
         {
             if (!ismoving || !_isGrounded) return;
 
+            float speed = 0;
+
+            if (!isrunning && input.Run)
+            {
+                isrunning = true;
+                speed = 1;
+                CancelInvoke();
+                InvokeRepeating("ProcessSteps", 0, 0.35f);
+            }
+
             FMOD.Studio.EventInstance footstep = FMODUnity.RuntimeManager.CreateInstance("event:/Steps/Footsteps");
             FMODUnity.RuntimeManager.AttachInstanceToGameObject(footstep, feet.transform);
-            footstep.setParameterByName("Floor", 1);
-            footstep.setParameterByName("Speed", 0);
+            footstep.setParameterByName("Floor", floor_type);
+            footstep.setParameterByName("Speed", speed);
             footstep.start();
             footstep.release();
         }
@@ -229,7 +261,7 @@ namespace FPSControllerLPFP
             var smoothX = _velocityX.Update(velocity.x, movementSmoothness);
             var smoothZ = _velocityZ.Update(velocity.z, movementSmoothness);
             var rigidbodyVelocity = _rigidbody.velocity;
-            var force = new Vector3(smoothX - rigidbodyVelocity.x, 0f, smoothZ - rigidbodyVelocity.z);
+            var force = new Vector3(smoothX - rigidbodyVelocity.x, -0.5f, smoothZ - rigidbodyVelocity.z);
             _rigidbody.AddForce(force, ForceMode.VelocityChange);
 
             if (direction.x != 0 || direction.z != 0)
@@ -257,13 +289,6 @@ namespace FPSControllerLPFP
             }
 
             return true;
-        }
-
-        private void Jump()
-        {
-            if (!_isGrounded || !input.Jump) return;
-            _isGrounded = false;
-            _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 			
         /// A helper for assistance with smoothing the camera rotation.
@@ -331,10 +356,6 @@ namespace FPSControllerLPFP
              SerializeField]
             private string run = "Fire3";
 
-            [Tooltip("The name of the virtual button mapped to jump."),
-             SerializeField]
-            private string jump = "Jump";
-
             /// Returns the value of the virtual axis mapped to rotate the camera around the y axis.
             public float RotateX
             {
@@ -363,13 +384,7 @@ namespace FPSControllerLPFP
             public bool Run
             {
                 get { return Input.GetButton(run); }
-            }
-				     
-            /// Returns true during the frame the user pressed down the virtual button mapped to jump.          
-            public bool Jump
-            {
-                get { return Input.GetButtonDown(jump); }
-            }
+            }				     
         }
     }
 }

@@ -79,8 +79,8 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 	[Tooltip("The bullet model inside the mag, not used for all weapons.")]
 	public SkinnedMeshRenderer bulletInMagRenderer;
 
-	[Header("Grenade Settings")]
-	public float grenadeSpawnDelay = 0.35f;
+	/*[Header("Grenade Settings")]
+	public float grenadeSpawnDelay = 0.35f;*/
 
 	[Header("Muzzleflash Settings")]
 	public bool randomMuzzleflash = false;
@@ -113,7 +113,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		[Header("Prefabs")]
 		public Transform bulletPrefab;
 		public Transform casingPrefab;
-		public Transform grenadePrefab;
+		//public Transform grenadePrefab;
 	}
 	public prefabs Prefabs;
 	
@@ -128,7 +128,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		//Bullet prefab spawn from this point
 		public Transform bulletSpawnPoint;
 
-		public Transform grenadeSpawnPoint;
+		//public Transform grenadeSpawnPoint;
 	}
 	public spawnpoints Spawnpoints;
 
@@ -178,7 +178,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 
 		//Aiming
 		//Toggle camera FOV when right click is held down
-		if(Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting) 
+		/*if(Input.GetButton("Fire2") && !isReloading && !isRunning && !isInspecting) 
 		{
 			
 			isAiming = true;
@@ -188,9 +188,9 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			//When right click is released
 			gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
 				aimFov,fovSpeed * Time.deltaTime);
-		} 
-		else 
-		{
+		} */
+		/*else 
+		{*/
 			//When right click is released
 			gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
 				defaultFov,fovSpeed * Time.deltaTime);
@@ -198,7 +198,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			isAiming = false;
 			//Stop aiming
 			anim.SetBool ("Aim", false);
-		}
+		//}
 		//Aiming end
 
 		//If randomize muzzleflash is true, genereate random int values
@@ -215,7 +215,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		AnimationCheck ();
 
 		//Play knife attack 1 animation when Q key is pressed
-		if (Input.GetKeyDown (KeyCode.Q) && !isInspecting) 
+		/*if (Input.GetKeyDown (KeyCode.Q) && !isInspecting) 
 		{
 			anim.Play ("Knife Attack 1", 0, 0f);
 		}
@@ -231,7 +231,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 			StartCoroutine (GrenadeSpawnDelay ());
 			//Play grenade throw animation
 			anim.Play("GrenadeThrow", 0, 0.0f);
-		}
+		}*/
 
 		//If out of ammo
 		if (currentAmmo == 0) 
@@ -341,10 +341,10 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		}
 
 		//Inspect weapon when T key is pressed
-		if (Input.GetKeyDown (KeyCode.T)) 
+		/*if (Input.GetKeyDown (KeyCode.T)) 
 		{
 			anim.SetTrigger ("Inspect");
-		}
+		}*/
 
 		//Reload 
 		if (Input.GetKeyDown (KeyCode.R) && !isReloading && !isInspecting) 
@@ -383,7 +383,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		}
 	}
 
-	private IEnumerator GrenadeSpawnDelay () {
+	/*private IEnumerator GrenadeSpawnDelay () {
 		
 		//Wait for set amount of time before spawning grenade
 		yield return new WaitForSeconds (grenadeSpawnDelay);
@@ -391,7 +391,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		Instantiate(Prefabs.grenadePrefab, 
 			Spawnpoints.grenadeSpawnPoint.transform.position, 
 			Spawnpoints.grenadeSpawnPoint.transform.rotation);
-	}
+	}*/
 
 	private IEnumerator AutoReload () {
 		//Wait set amount of time

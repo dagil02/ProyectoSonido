@@ -61,6 +61,11 @@ namespace FPSControllerLPFP
         private readonly RaycastHit[] _groundCastResults = new RaycastHit[8];
         private readonly RaycastHit[] _wallCastResults = new RaycastHit[8];
 
+        //Audio
+        FMODUnity.StudioEventEmitter emitter;
+        //Stone = 0 - Grass = 1 - Wood = 2
+        private int floor = 0;
+
         /// Initializes the FpsController on start.
         private void Start()
         {
@@ -74,8 +79,14 @@ namespace FPSControllerLPFP
             _velocityZ = new SmoothVelocity();
             Cursor.lockState = CursorLockMode.Locked;
             ValidateRotationRestriction();
+
+            //Audio
+            GameObject target = GameObject.Find("Feet");
+            emitter = target.GetComponent<FMODUnity.StudioEventEmitter>();
+            floor = 1;
+            emitter.SetParameter("Floor_type", floor);
         }
-			
+
         private Transform AssignCharactersCamera()
         {
             var t = transform;
@@ -209,6 +220,18 @@ namespace FPSControllerLPFP
             var rigidbodyVelocity = _rigidbody.velocity;
             var force = new Vector3(smoothX - rigidbodyVelocity.x, 0f, smoothZ - rigidbodyVelocity.z);
             _rigidbody.AddForce(force, ForceMode.VelocityChange);
+
+            if (direction == Vector3.zero)
+            {
+                emitter.Stop();
+            }
+            else    // It is moving
+            {
+                if (!emitter.IsPlaying())
+                {
+                    emitter.Play();         
+                }
+            }      
         }
 
         private bool CheckCollisionsWithWalls(Vector3 velocity)

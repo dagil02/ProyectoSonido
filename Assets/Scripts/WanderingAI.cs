@@ -11,6 +11,7 @@ public class WanderingAI : MonoBehaviour
     private Transform target;
     private NavMeshAgent agent;
     private float timer;
+    private bool active = true;
 
     // Use this for initialization
     void OnEnable()
@@ -24,12 +25,20 @@ public class WanderingAI : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        if (timer >= wanderTimer)
+        if (transform.position == agent.destination && active) {
+            Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
+            agent.SetDestination(newPos);
+            timer = 0;
+
+        }
+
+        if (timer >= wanderTimer && active)
         {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
             agent.SetDestination(newPos);
             timer = 0;
         }
+        
     }
 
     public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
@@ -43,5 +52,9 @@ public class WanderingAI : MonoBehaviour
         NavMesh.SamplePosition(randDirection, out navHit, dist, layermask);
 
         return navHit.position;
+    }
+
+    public void setActive(bool b) {
+        active = b;
     }
 }

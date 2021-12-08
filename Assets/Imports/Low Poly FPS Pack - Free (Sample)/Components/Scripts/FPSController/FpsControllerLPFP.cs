@@ -47,25 +47,24 @@ namespace FPSControllerLPFP
 
         [Tooltip("The names of the axes and buttons for Unity's Input Manager."), SerializeField]
         private FpsInput input;
+
 #pragma warning restore 649
 
         private Rigidbody _rigidbody;
         private CapsuleCollider _collider;
-        private AudioSource _audioSource;
         private SmoothRotation _rotationX;
         private SmoothRotation _rotationY;
         private SmoothVelocity _velocityX;
         private SmoothVelocity _velocityZ;
         private bool _isGrounded;
-
+        
         private readonly RaycastHit[] _groundCastResults = new RaycastHit[8];
         private readonly RaycastHit[] _wallCastResults = new RaycastHit[8];
 
         //Audio
-        FMODUnity.StudioEventEmitter emitter;
-        //Stone = 0 - Grass = 1 - Wood = 2
-        private int floor = 0;
-
+        GameObject feet;
+        private bool ismoving = false;
+        private float walkingspeed;
         /// Initializes the FpsController on start.
         private void Start()
         {
@@ -81,10 +80,9 @@ namespace FPSControllerLPFP
             ValidateRotationRestriction();
 
             //Audio
-            GameObject target = GameObject.Find("Feet");
-            emitter = target.GetComponent<FMODUnity.StudioEventEmitter>();
-            floor = 1;
-            emitter.SetParameter("Floor_type", floor);
+            feet = GameObject.Find("Feet");
+            walkingspeed = walkingSpeed * 0.08f;
+            InvokeRepeating("ProcessSteps", 0, walkingspeed);
         }
 
         private Transform AssignCharactersCamera()
@@ -148,6 +146,18 @@ namespace FPSControllerLPFP
             Jump();
         }
 
+        private void ProcessSteps()
+        {
+            if (!ismoving || !_isGrounded) return;
+
+            FMOD.Studio.EventInstance footstep = FMODUnity.RuntimeManager.CreateInstance("event:/Steps/Footsteps");
+            FMODUnity.RuntimeManager.AttachInstanceToGameObject(footstep, feet.transform);
+            footstep.setParameterByName("Floor", 1);
+            footstep.setParameterByName("Speed", 0);
+            footstep.start();
+            footstep.release();
+        }
+
         private void RotateCameraAndCharacter()
         {
             var rotationX = _rotationX.Update(RotationXRaw, rotationSmoothness);
@@ -204,6 +214,7 @@ namespace FPSControllerLPFP
 
         private void MoveCharacter()
         {
+            
             var direction = new Vector3(input.Move, 0f, input.Strafe).normalized;
             var worldDirection = transform.TransformDirection(direction);
             var velocity = worldDirection * (input.Run ? runningSpeed : walkingSpeed);
@@ -221,17 +232,9 @@ namespace FPSControllerLPFP
             var force = new Vector3(smoothX - rigidbodyVelocity.x, 0f, smoothZ - rigidbodyVelocity.z);
             _rigidbody.AddForce(force, ForceMode.VelocityChange);
 
-            if (direction == Vector3.zero)
-            {
-                emitter.Stop();
-            }
-            else    // It is moving
-            {
-                if (!emitter.IsPlaying())
-                {
-                    emitter.Play();         
-                }
-            }      
+            if (direction.x != 0 || direction.z != 0)
+                ismoving = true;
+            else ismoving = false;
         }
 
         private bool CheckCollisionsWithWalls(Vector3 velocity)

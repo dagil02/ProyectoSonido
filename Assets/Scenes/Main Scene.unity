@@ -4908,6 +4908,10 @@ PrefabInstance:
       value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 3596975252502925890, guid: 09ad05f1d3f52754d9bd520cebb18b85, type: 3}
+      propertyPath: walkingspeed
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3596975252502925890, guid: 09ad05f1d3f52754d9bd520cebb18b85, type: 3}
       propertyPath: mouseSensitivity
       value: 6
       objectReference: {fileID: 0}

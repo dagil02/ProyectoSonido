@@ -6,6 +6,9 @@ using UnityEngine.AI;
 public class EnemyController : MonoBehaviour
 {
     public Soldier_feet feet = null;
+    public Transform Bullet;
+    public Transform Casing;
+    public Transform bullet_spawn;
 
     [SerializeField]
     private float time_running = 10.0f;
@@ -13,6 +16,8 @@ public class EnemyController : MonoBehaviour
     private float time_shooting = 3.0f;
     [SerializeField]
     private float time_shouting = 5.0f;
+    [SerializeField]
+    private float cadencia = 1.0f;
 
     float time2change;
     float timer = 0;
@@ -25,6 +30,7 @@ public class EnemyController : MonoBehaviour
     private enum states { run, shout, shoot };
     private states currentState = states.run;
 
+    public float bulletForce = 400.0f;
     void Awake()
     {
         //Set the animator component
@@ -49,7 +55,6 @@ public class EnemyController : MonoBehaviour
             changeState();
         }
     }
-
     private void changeState()
     {
         int next = Random.Range(0, 3);
@@ -70,6 +75,7 @@ public class EnemyController : MonoBehaviour
         switch (next)
         {
             case 0:
+                CancelInvoke();
                 feet.ismoving = true;
                 feet.isshooting = false;
                 feet.isshouting = false;
@@ -82,6 +88,7 @@ public class EnemyController : MonoBehaviour
                 break;
 
             case 1:
+                CancelInvoke();
                 feet.ismoving = false;
                 feet.isshooting = false;
                 feet.isshouting = true;
@@ -91,6 +98,7 @@ public class EnemyController : MonoBehaviour
                 time2change = time_shouting + Random.Range(0.5f, 2.0f);
                 agent.enabled = false;
                 wander.setActive(false);
+                Shout();
                 break;
 
             case 2:
@@ -103,10 +111,39 @@ public class EnemyController : MonoBehaviour
                 time2change = time_shooting + Random.Range(0.5f, 2.0f);
                 agent.enabled = false;
                 wander.setActive(false);
+                InvokeRepeating("Shoot", 0, cadencia);
                 break;
 
             default:
                 break;
         }                         
+    }
+    private void Shout ()
+    {
+        FMOD.Studio.EventInstance shot = FMODUnity.RuntimeManager.CreateInstance("event:/Voices/Voicelines");
+        FMODUnity.RuntimeManager.AttachInstanceToGameObject(shot, this.transform);
+        shot.start();
+        shot.release();
+    }
+    private void Shoot()
+    {
+        FMOD.Studio.EventInstance shot = FMODUnity.RuntimeManager.CreateInstance("event:/others/Shoot_1");
+        FMODUnity.RuntimeManager.AttachInstanceToGameObject(shot, this.transform);
+        var bullet = (Transform)Instantiate(
+                    Bullet,
+                    bullet_spawn.position,
+                    transform.rotation);
+
+        //Add velocity to the bullet
+        bullet.GetComponent<Rigidbody>().velocity =
+            bullet.transform.forward * bulletForce;
+
+        //Spawn casing prefab at spawnpoint
+        Instantiate(Casing,
+            bullet_spawn.position,
+            transform.rotation);
+
+        shot.start();
+        shot.release();
     }
 }

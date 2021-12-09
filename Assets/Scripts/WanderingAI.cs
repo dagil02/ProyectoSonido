@@ -13,6 +13,9 @@ public class WanderingAI : MonoBehaviour
     private float timer;
     private bool active = true;
 
+    [SerializeField]
+    private float dest_margin = 0.1f;
+
     // Use this for initialization
     void OnEnable()
     {
@@ -29,22 +32,26 @@ public class WanderingAI : MonoBehaviour
     {
         timer += Time.deltaTime;
 
-        if (transform.position == agent.destination && active) {
+        if (active && (IsNear(agent.destination) || timer >= wanderTimer)) {
             Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
             agent.SetDestination(newPos);
             timer = 0;
 
-        }
-
-        if (timer >= wanderTimer && active)
-        {
-            Vector3 newPos = RandomNavSphere(transform.position, wanderRadius, -1);
-            agent.SetDestination(newPos);
-            timer = 0;
-        }
-        
+        } 
     }
 
+    private bool IsNear (Vector3 dest)
+    {
+        Vector3 p = transform.position;
+        Vector3 d = dest;
+        Vector3 dist = d - p;
+
+        if (dist.x <= dest_margin  && dist.z <= dest_margin && dist.y <= dest_margin)
+        {
+            return true;
+        }
+        return false;
+    }
     public static Vector3 RandomNavSphere(Vector3 origin, float dist, int layermask)
     {
         Vector3 randDirection = Random.insideUnitSphere * dist;

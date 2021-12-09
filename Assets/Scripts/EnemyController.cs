@@ -7,7 +7,13 @@ public class EnemyController : MonoBehaviour
 {
     public Soldier_feet feet = null;
 
-    public float change;
+    [SerializeField]
+    private float time_running = 10.0f;
+    [SerializeField]
+    private float time_shooting = 3.0f;
+    [SerializeField]
+    private float time_shouting = 5.0f;
+
     float time2change;
     float timer = 0;
     Animator anim;
@@ -16,7 +22,7 @@ public class EnemyController : MonoBehaviour
 
     WanderingAI wander;
 
-    private enum states {shoot, run};
+    private enum states { run, shout, shoot };
     private states currentState = states.run;
 
     void Awake()
@@ -25,13 +31,13 @@ public class EnemyController : MonoBehaviour
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         wander = GetComponent<WanderingAI>();
-        anim.Play("Run", 0,1000);
+        anim.Play("Run", 0, 0);
     }
     // Start is called before the first frame update
     void Start()
     {
         feet = this.transform.Find("Soldier_Feet").GetComponent<Soldier_feet>();
-        time2change = change;
+        time2change = time_running;
     }
 
     // Update is called once per frame
@@ -46,29 +52,61 @@ public class EnemyController : MonoBehaviour
 
     private void changeState()
     {
-        if (currentState != states.run)
-        {
-            feet.ismoving = true;
-            feet.isshooting = false;
-            feet.isshouting = false;
+        int next = Random.Range(0, 3);
 
-            currentState = states.run;
-            anim.Play("Run", 0, 1000);
-            time2change = change + Random.Range(0.5f, 5.0f); ;
-            agent.enabled = true;
-            wander.setActive(true);
+        if (currentState == states.run)
+        {
+            if (next == 0) next++;
+        }
+        else if (currentState == states.shout)
+        {
+            if (next == 1) next++;
         }
         else
         {
-            feet.ismoving = false;
-            feet.isshooting = true;
-            feet.isshouting = false;
-
-            currentState = states.shoot;
-            anim.Play("shoot", 0, 3);
-            time2change = 5 + Random.Range(0.5f, 2.0f);
-            agent.enabled = false;
-            wander.setActive(false);
+            next = 0;
         }
+
+        switch (next)
+        {
+            case 0:
+                feet.ismoving = true;
+                feet.isshooting = false;
+                feet.isshouting = false;
+
+                currentState = states.run;
+                anim.Play("Run", 0, 0);
+                time2change = time_running + Random.Range(0.5f, 2.0f); ;
+                agent.enabled = true;
+                wander.setActive(true);
+                break;
+
+            case 1:
+                feet.ismoving = false;
+                feet.isshooting = false;
+                feet.isshouting = true;
+
+                currentState = states.shout;
+                anim.Play("Idle", 0, 0);
+                time2change = time_shouting + Random.Range(0.5f, 2.0f);
+                agent.enabled = false;
+                wander.setActive(false);
+                break;
+
+            case 2:
+                feet.ismoving = false;
+                feet.isshooting = true;
+                feet.isshouting = false;
+
+                currentState = states.shoot;
+                anim.Play("shoot", 0, 0);
+                time2change = time_shooting + Random.Range(0.5f, 2.0f);
+                agent.enabled = false;
+                wander.setActive(false);
+                break;
+
+            default:
+                break;
+        }                         
     }
 }

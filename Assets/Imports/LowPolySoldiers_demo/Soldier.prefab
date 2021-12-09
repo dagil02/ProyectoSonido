@@ -482,7 +482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfd13aeeeefa8424983afc66b9c54cd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wanderRadius: 12
+  wanderRadius: 10
   wanderTimer: 5
 --- !u!114 &77214424
 MonoBehaviour:
@@ -497,7 +497,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   feet: {fileID: 1712204202143225910}
-  change: 2
+  time_running: 15
+  time_shooting: 3
+  time_shouting: 5
 --- !u!1 &1808653303319586192
 GameObject:
   m_ObjectHideFlags: 0

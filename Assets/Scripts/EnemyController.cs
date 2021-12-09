@@ -66,7 +66,7 @@ public class EnemyController : MonoBehaviour
         {
             next = 0;
         }
-
+      
         switch (next)
         {
             case 0:

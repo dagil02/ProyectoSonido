@@ -20,6 +20,10 @@ public class WanderingAI : MonoBehaviour
         timer = wanderTimer;
     }
 
+    private void Start()
+    {
+        transform.position = RandomNavSphere(transform.position, 2, -1);
+    }
     // Update is called once per frame
     void Update()
     {

@@ -28,10 +28,6 @@ public class CasingScript : MonoBehaviour {
 	[Tooltip("How long after spawning that the casing is destroyed")]
 	public float despawnTime;
 
-	[Header("Audio")]
-	public AudioClip[] casingSounds;
-	public AudioSource audioSource;
-
 	[Header("Spin Settings")]
 	//How fast the casing spins
 	[Tooltip("How fast the casing spins over time")]
@@ -75,11 +71,10 @@ public class CasingScript : MonoBehaviour {
 	{
 		//Wait for random time before playing sound clip
 		yield return new WaitForSeconds (Random.Range(0.25f, 0.85f));
-		//Get a random casing sound from the array 
-		audioSource.clip = casingSounds
-			[Random.Range(0, casingSounds.Length)];
-		//Play the random casing sound
-		audioSource.Play();
+		FMOD.Studio.EventInstance casing = FMODUnity.RuntimeManager.CreateInstance("event:/others/casings");
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(casing, this.transform);
+		casing.start();
+		casing.release();
 	}
 
 	private IEnumerator RemoveCasing () 

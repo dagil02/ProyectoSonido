@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="ParameterPreset" id="{6eec0d9a-c88b-4f17-8869-eea482b01085}">
+		<property name="name">
+			<value>Ammo</value>
+		</property>
+		<relationship name="folder">
+			<destination>{2654c64a-514e-4c09-a7ca-adfb68981a7d}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{5c0635cd-316a-4ef3-aa70-0be63231d289}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{5c0635cd-316a-4ef3-aa70-0be63231d289}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>Has_ammo</value>
+			<value>Out_of_ammo</value>
+		</property>
+		<property name="initialValue">
+			<value>0</value>
+		</property>
+	</object>
+</objects>

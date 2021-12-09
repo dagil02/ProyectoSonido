@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
+    public Soldier_feet feet = null;
+
     public float change;
     float time2change;
     float timer = 0;
@@ -19,7 +21,6 @@ public class EnemyController : MonoBehaviour
 
     void Awake()
     {
-
         //Set the animator component
         anim = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
@@ -29,6 +30,7 @@ public class EnemyController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        feet = this.transform.Find("Soldier_Feet").GetComponent<Soldier_feet>();
         time2change = change;
     }
 
@@ -46,6 +48,10 @@ public class EnemyController : MonoBehaviour
     {
         if (currentState != states.run)
         {
+            feet.ismoving = true;
+            feet.isshooting = false;
+            feet.isshouting = false;
+
             currentState = states.run;
             anim.Play("Run", 0, 1000);
             time2change = change + Random.Range(0.5f, 5.0f); ;
@@ -54,9 +60,13 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
+            feet.ismoving = false;
+            feet.isshooting = true;
+            feet.isshouting = false;
+
             currentState = states.shoot;
             anim.Play("shoot", 0, 3);
-            time2change = 1 + Random.Range(0.5f, 2.0f);
+            time2change = 5 + Random.Range(0.5f, 2.0f);
             agent.enabled = false;
             wander.setActive(false);
         }

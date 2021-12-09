@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{07b7ba02-fae9-481b-b332-1a64ad725ab9}">
+		<property name="assetPath">
+			<value>Raw/casing-sound-2.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.13</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{4f04c453-43ce-4422-b809-bfa558ed75c2}</destination>
+		</relationship>
+	</object>
+</objects>

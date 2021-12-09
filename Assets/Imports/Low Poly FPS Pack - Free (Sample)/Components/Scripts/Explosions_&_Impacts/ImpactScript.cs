@@ -8,19 +8,14 @@ public class ImpactScript : MonoBehaviour {
 	//How long before the impact is destroyed
 	public float despawnTimer = 1.0f;
 
-	[Header("Audio")]
-	public AudioClip[] impactSounds;
-	public AudioSource audioSource;
-
 	private void Start () {
 		// Start the despawn timer
 		StartCoroutine (DespawnTimer ());
 
-		//Get a random impact sound from the array
-		audioSource.clip = impactSounds
-			[Random.Range(0, impactSounds.Length)];
-		//Play the random impact sound
-		audioSource.Play();
+		FMOD.Studio.EventInstance impact = FMODUnity.RuntimeManager.CreateInstance("event:/others/Impacts");
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(impact, this.transform);
+		impact.start();
+		impact.release();
 	}
 	
 	private IEnumerator DespawnTimer() {

@@ -266,6 +266,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 				if (!isAiming) //if not aiming
 				{
 					anim.Play ("Fire", 0, 0f);
+					ProcessShotAudio();
 					//If random muzzle is false
 					if (!randomMuzzleflash && 
 						enableMuzzleflash == true) 
@@ -351,6 +352,7 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		{
 			//Reload
 			Reload ();
+			ProcessReloadAudio();
 		}
 
 		//Walking when pressing down WASD keys
@@ -383,6 +385,26 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		}
 	}
 
+	private void ProcessShotAudio()
+    {
+		FMOD.Studio.EventInstance shot = FMODUnity.RuntimeManager.CreateInstance("event:/others/Shoot_1");
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(shot, this.transform);
+		
+		shot.start();
+		shot.release();
+	}
+
+	private void ProcessReloadAudio()
+	{
+		FMOD.Studio.EventInstance reload = FMODUnity.RuntimeManager.CreateInstance("event:/others/Reloads");
+		FMODUnity.RuntimeManager.AttachInstanceToGameObject(reload, this.transform);
+
+        if (outOfAmmo)	reload.setParameterByName("Ammo", 1);
+		else			reload.setParameterByName("Ammo", 0);
+		outOfAmmo = false;
+		reload.start();
+		reload.release();
+	}
 	/*private IEnumerator GrenadeSpawnDelay () {
 		
 		//Wait for set amount of time before spawning grenade
@@ -450,7 +472,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour {
 		}
 		//Restore ammo when reloading
 		currentAmmo = ammo;
-		outOfAmmo = false;
 	}
 
 	//Enable bullet in mag renderer after set amount of time

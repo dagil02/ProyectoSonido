@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.01.00">
+	<object class="AudioFile" id="{765cb1f9-f518-42cc-999d-c82497486495}">
+		<property name="assetPath">
+			<value>Raw/assault_rifle_01_reload_ammo_left.mp3</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>2.448</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{4f04c453-43ce-4422-b809-bfa558ed75c2}</destination>
+		</relationship>
+	</object>
+</objects>

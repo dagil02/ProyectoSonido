@@ -11,11 +11,11 @@ public class EnemyController : MonoBehaviour
     public Transform bullet_spawn;
 
     [SerializeField]
-    private float time_running = 10.0f;
+    private float time_running = 12.0f;
     [SerializeField]
     private float time_shooting = 3.0f;
     [SerializeField]
-    private float time_shouting = 5.0f;
+    private float time_shouting = 4.0f;
     [SerializeField]
     private float cadencia = 1.0f;
 
@@ -82,7 +82,7 @@ public class EnemyController : MonoBehaviour
 
                 currentState = states.run;
                 anim.Play("Run", 0, 0);
-                time2change = time_running + Random.Range(0.5f, 2.0f); ;
+                time2change = time_running + Random.Range(-2.5f, 2.5f); ;
                 agent.enabled = true;
                 wander.setActive(true);
                 break;
@@ -95,7 +95,7 @@ public class EnemyController : MonoBehaviour
 
                 currentState = states.shout;
                 anim.Play("Idle", 0, 0);
-                time2change = time_shouting + Random.Range(0.5f, 2.0f);
+                time2change = time_shouting;
                 agent.enabled = false;
                 wander.setActive(false);
                 Shout();
@@ -108,7 +108,7 @@ public class EnemyController : MonoBehaviour
 
                 currentState = states.shoot;
                 anim.Play("shoot", 0, 0);
-                time2change = time_shooting + Random.Range(0.5f, 2.0f);
+                time2change = time_shooting + Random.Range(-1.5f, 1.5f);
                 agent.enabled = false;
                 wander.setActive(false);
                 InvokeRepeating("Shoot", 0, cadencia);

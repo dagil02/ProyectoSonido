@@ -502,8 +502,8 @@ MonoBehaviour:
   Bullet: {fileID: 4879702113200764, guid: 5953171a59c27394e9ad5cbb564affa8, type: 3}
   Casing: {fileID: 4420745226056240, guid: 7be59128a5ee3424faf33d7a408c0b2e, type: 3}
   bullet_spawn: {fileID: 4315560444846672973}
-  time_running: 2
-  time_shooting: 0
+  time_running: 12
+  time_shooting: 3
   time_shouting: 4
   cadencia: 0.5
   bulletForce: 400

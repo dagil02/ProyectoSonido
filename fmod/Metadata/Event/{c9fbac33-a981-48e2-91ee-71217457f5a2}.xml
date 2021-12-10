@@ -136,6 +136,9 @@
 		<property name="nameOfPropertyBeingModulated">
 			<value>pitch</value>
 		</property>
+		<property name="amount">
+			<value>2.08333349</value>
+		</property>
 	</object>
 	<object class="SingleSound" id="{0cee6f20-cd9a-469e-9627-d9ba5ad6c8ba}">
 		<relationship name="audioFile">

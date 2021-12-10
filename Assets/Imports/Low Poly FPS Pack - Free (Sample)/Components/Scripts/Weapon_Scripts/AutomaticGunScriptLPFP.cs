@@ -5,7 +5,7 @@ using UnityEngine.UI;
 // ----- Low Poly FPS Pack Free Version -----
 public class AutomaticGunScriptLPFP : MonoBehaviour
 {
-
+    public bool pause = false;
     //Animator component attached to weapon
     Animator anim;
 
@@ -80,9 +80,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour
     [Tooltip("The bullet model inside the mag, not used for all weapons.")]
     public SkinnedMeshRenderer bulletInMagRenderer;
 
-    /*[Header("Grenade Settings")]
-	public float grenadeSpawnDelay = 0.35f;*/
-
     [Header("Muzzleflash Settings")]
     public bool randomMuzzleflash = false;
     //min should always bee 1
@@ -128,8 +125,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour
         public Transform casingSpawnPoint;
         //Bullet prefab spawn from this point
         public Transform bulletSpawnPoint;
-
-        //public Transform grenadeSpawnPoint;
     }
     public spawnpoints Spawnpoints;
 
@@ -157,207 +152,205 @@ public class AutomaticGunScriptLPFP : MonoBehaviour
 
     private void LateUpdate()
     {
-
-        //Weapon sway
-        if (weaponSway == true)
+        if (!pause)
         {
-            float movementX = -Input.GetAxis("Mouse X") * swayAmount;
-            float movementY = -Input.GetAxis("Mouse Y") * swayAmount;
-            //Clamp movement to min and max values
-            movementX = Mathf.Clamp
-                (movementX, -maxSwayAmount, maxSwayAmount);
-            movementY = Mathf.Clamp
-                (movementY, -maxSwayAmount, maxSwayAmount);
-            //Lerp local pos
-            Vector3 finalSwayPosition = new Vector3
-                (movementX, movementY, 0);
-            transform.localPosition = Vector3.Lerp
-                (transform.localPosition, finalSwayPosition +
-                    initialSwayPosition, Time.deltaTime * swaySmoothValue);
-        }
-
+            //Weapon sway
+            if (weaponSway == true)
+            {
+                float movementX = -Input.GetAxis("Mouse X") * swayAmount;
+                float movementY = -Input.GetAxis("Mouse Y") * swayAmount;
+                //Clamp movement to min and max values
+                movementX = Mathf.Clamp
+                    (movementX, -maxSwayAmount, maxSwayAmount);
+                movementY = Mathf.Clamp
+                    (movementY, -maxSwayAmount, maxSwayAmount);
+                //Lerp local pos
+                Vector3 finalSwayPosition = new Vector3
+                    (movementX, movementY, 0);
+                transform.localPosition = Vector3.Lerp
+                    (transform.localPosition, finalSwayPosition +
+                        initialSwayPosition, Time.deltaTime * swaySmoothValue);
+            }
+        }  
     }
 
     private void Update()
     {
-
-        //When right click is released
-        gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
-            defaultFov, fovSpeed * Time.deltaTime);
-
-        isAiming = false;
-        //Stop aiming
-        anim.SetBool("Aim", false);
-        //}
-        //Aiming end
-
-        //If randomize muzzleflash is true, genereate random int values
-        if (randomMuzzleflash == true)
+        if (!pause)
         {
-            randomMuzzleflashValue = Random.Range(minRandomValue, maxRandomValue);
-        }
+            //When right click is released
+            gunCamera.fieldOfView = Mathf.Lerp(gunCamera.fieldOfView,
+                defaultFov, fovSpeed * Time.deltaTime);
 
-        //Set current ammo text from ammo int
-        currentAmmoText.text = currentAmmo.ToString();
+            isAiming = false;
+            //Stop aiming
+            anim.SetBool("Aim", false);
+            //}
+            //Aiming end
 
-        //Continosuly check which animation 
-        //is currently playing
-        AnimationCheck();
-
-        //If out of ammo
-        if (currentAmmo == 0)
-        {
-            //Toggle bool
-            outOfAmmo = true;
-            //Auto reload if true
-            if (autoReload == true && !isReloading)
+            //If randomize muzzleflash is true, genereate random int values
+            if (randomMuzzleflash == true)
             {
-                StartCoroutine(AutoReload());
+                randomMuzzleflashValue = Random.Range(minRandomValue, maxRandomValue);
             }
-        }
-        else
-        {
-            //Toggle bool
-            outOfAmmo = false;
-            //anim.SetBool ("Out Of Ammo", false);
-        }
 
-        //AUtomatic fire
-        //Left click hold 
-        if (Input.GetMouseButton(0) && !outOfAmmo && !isReloading && !isInspecting && !isRunning)
-        {
-            //Shoot automatic
-            if (Time.time - lastFired > 1 / fireRate)
+            //Set current ammo text from ammo int
+            currentAmmoText.text = currentAmmo.ToString();
+
+            //Continosuly check which animation 
+            //is currently playing
+            AnimationCheck();
+
+            //If out of ammo
+            if (currentAmmo == 0)
             {
-                lastFired = Time.time;
-
-                //Remove 1 bullet from ammo
-                currentAmmo -= 1;
-
-                if (!isAiming) //if not aiming
+                //Toggle bool
+                outOfAmmo = true;
+                //Auto reload if true
+                if (autoReload == true && !isReloading)
                 {
-                    anim.Play("Fire", 0, 0f);
-                    ProcessShotAudio();
-                    //If random muzzle is false
-                    if (!randomMuzzleflash &&
-                        enableMuzzleflash == true)
+                    StartCoroutine(AutoReload());
+                }
+            }
+            else
+            {
+                //Toggle bool
+                outOfAmmo = false;
+                //anim.SetBool ("Out Of Ammo", false);
+            }
+
+            //AUtomatic fire
+            //Left click hold 
+            if (Input.GetMouseButton(0) && !outOfAmmo && !isReloading && !isInspecting && !isRunning)
+            {
+                //Shoot automatic
+                if (Time.time - lastFired > 1 / fireRate)
+                {
+                    lastFired = Time.time;
+
+                    //Remove 1 bullet from ammo
+                    currentAmmo -= 1;
+
+                    if (!isAiming) //if not aiming
                     {
-                        muzzleParticles.Emit(1);
-                        //Light flash start
-                        StartCoroutine(MuzzleFlashLight());
-                    }
-                    else if (randomMuzzleflash == true)
-                    {
-                        //Only emit if random value is 1
-                        if (randomMuzzleflashValue == 1)
+                        anim.Play("Fire", 0, 0f);
+                        ProcessShotAudio();
+                        //If random muzzle is false
+                        if (!randomMuzzleflash &&
+                            enableMuzzleflash == true)
                         {
-                            if (enableSparks == true)
+                            muzzleParticles.Emit(1);
+                            //Light flash start
+                            StartCoroutine(MuzzleFlashLight());
+                        }
+                        else if (randomMuzzleflash == true)
+                        {
+                            //Only emit if random value is 1
+                            if (randomMuzzleflashValue == 1)
                             {
-                                //Emit random amount of spark particles
-                                sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
-                            }
-                            if (enableMuzzleflash == true)
-                            {
-                                muzzleParticles.Emit(1);
-                                //Light flash start
-                                StartCoroutine(MuzzleFlashLight());
+                                if (enableSparks == true)
+                                {
+                                    //Emit random amount of spark particles
+                                    sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
+                                }
+                                if (enableMuzzleflash == true)
+                                {
+                                    muzzleParticles.Emit(1);
+                                    //Light flash start
+                                    StartCoroutine(MuzzleFlashLight());
+                                }
                             }
                         }
                     }
-                }
-                else //if aiming
-                {
-
-                    anim.Play("Aim Fire", 0, 0f);
-
-                    //If random muzzle is false
-                    if (!randomMuzzleflash)
+                    else //if aiming
                     {
-                        muzzleParticles.Emit(1);
-                        //If random muzzle is true
-                    }
-                    else if (randomMuzzleflash == true)
-                    {
-                        //Only emit if random value is 1
-                        if (randomMuzzleflashValue == 1)
+
+                        anim.Play("Aim Fire", 0, 0f);
+
+                        //If random muzzle is false
+                        if (!randomMuzzleflash)
                         {
-                            if (enableSparks == true)
+                            muzzleParticles.Emit(1);
+                            //If random muzzle is true
+                        }
+                        else if (randomMuzzleflash == true)
+                        {
+                            //Only emit if random value is 1
+                            if (randomMuzzleflashValue == 1)
                             {
-                                //Emit random amount of spark particles
-                                sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
-                            }
-                            if (enableMuzzleflash == true)
-                            {
-                                muzzleParticles.Emit(1);
-                                //Light flash start
-                                StartCoroutine(MuzzleFlashLight());
+                                if (enableSparks == true)
+                                {
+                                    //Emit random amount of spark particles
+                                    sparkParticles.Emit(Random.Range(minSparkEmission, maxSparkEmission));
+                                }
+                                if (enableMuzzleflash == true)
+                                {
+                                    muzzleParticles.Emit(1);
+                                    //Light flash start
+                                    StartCoroutine(MuzzleFlashLight());
+                                }
                             }
                         }
                     }
+
+                    //Spawn bullet from bullet spawnpoint
+                    var bullet = (Transform)Instantiate(
+                        Prefabs.bulletPrefab,
+                        Spawnpoints.bulletSpawnPoint.transform.position,
+                        Spawnpoints.bulletSpawnPoint.transform.rotation);
+
+                    //Add velocity to the bullet
+                    bullet.GetComponent<Rigidbody>().velocity =
+                        bullet.transform.forward * bulletForce;
+
+                    //Spawn casing prefab at spawnpoint
+                    Instantiate(Prefabs.casingPrefab,
+                        Spawnpoints.casingSpawnPoint.transform.position,
+                        Spawnpoints.casingSpawnPoint.transform.rotation);
                 }
-
-                //Spawn bullet from bullet spawnpoint
-                var bullet = (Transform)Instantiate(
-                    Prefabs.bulletPrefab,
-                    Spawnpoints.bulletSpawnPoint.transform.position,
-                    Spawnpoints.bulletSpawnPoint.transform.rotation);
-
-                //Add velocity to the bullet
-                bullet.GetComponent<Rigidbody>().velocity =
-                    bullet.transform.forward * bulletForce;
-
-                //Spawn casing prefab at spawnpoint
-                Instantiate(Prefabs.casingPrefab,
-                    Spawnpoints.casingSpawnPoint.transform.position,
-                    Spawnpoints.casingSpawnPoint.transform.rotation);
             }
-        }
 
-        //Inspect weapon when T key is pressed
-        /*if (Input.GetKeyDown (KeyCode.T)) 
-        {
-            anim.SetTrigger ("Inspect");
-        }*/
+            //Reload 
+            if (Input.GetKeyDown(KeyCode.R) && !isReloading && !isInspecting)
+            {
+                //Reload
+                Reload();
+                ProcessReloadAudio();
+            }
 
-        //Reload 
-        if (Input.GetKeyDown(KeyCode.R) && !isReloading && !isInspecting)
-        {
-            //Reload
-            Reload();
-            ProcessReloadAudio();
-        }
+            //Walking when pressing down WASD keys
+            if (Input.GetKey(KeyCode.W) && !isRunning ||
+                Input.GetKey(KeyCode.A) && !isRunning ||
+                Input.GetKey(KeyCode.S) && !isRunning ||
+                Input.GetKey(KeyCode.D) && !isRunning)
+            {
+                anim.SetBool("Walk", true);
+            }
+            else
+            {
+                anim.SetBool("Walk", false);
+            }
 
-        //Walking when pressing down WASD keys
-        if (Input.GetKey(KeyCode.W) && !isRunning ||
-            Input.GetKey(KeyCode.A) && !isRunning ||
-            Input.GetKey(KeyCode.S) && !isRunning ||
-            Input.GetKey(KeyCode.D) && !isRunning)
-        {
-            anim.SetBool("Walk", true);
-        }
-        else
-        {
-            anim.SetBool("Walk", false);
-        }
+            //Running when pressing down W and Left Shift key
+            if ((Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift)))
+            {
+                isRunning = true;
+            }
+            else
+            {
+                isRunning = false;
+            }
 
-        //Running when pressing down W and Left Shift key
-        if ((Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.LeftShift)))
-        {
-            isRunning = true;
-        }
-        else
-        {
-            isRunning = false;
-        }
+            //Run anim toggle
+            if (isRunning == true)
+            {
+                anim.SetBool("Run", true);
+            }
+            else
+            {
+                anim.SetBool("Run", false);
+            }
 
-        //Run anim toggle
-        if (isRunning == true)
-        {
-            anim.SetBool("Run", true);
-        }
-        else
-        {
-            anim.SetBool("Run", false);
         }
 
     }
@@ -382,15 +375,6 @@ public class AutomaticGunScriptLPFP : MonoBehaviour
         reload.start();
         reload.release();
     }
-    /*private IEnumerator GrenadeSpawnDelay () {
-		
-		//Wait for set amount of time before spawning grenade
-		yield return new WaitForSeconds (grenadeSpawnDelay);
-		//Spawn grenade prefab at spawnpoint
-		Instantiate(Prefabs.grenadePrefab, 
-			Spawnpoints.grenadeSpawnPoint.transform.position, 
-			Spawnpoints.grenadeSpawnPoint.transform.rotation);
-	}*/
 
     private IEnumerator AutoReload()
     {

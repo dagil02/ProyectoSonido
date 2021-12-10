@@ -15,6 +15,13 @@ public class Headsets : MonoBehaviour
     private string[] texts = {"GSSh-01", "Com Tac_2", "XCELL_500BT"};
 
     private FMOD.Studio.EventInstance headset_;
+
+    private bool menu = false;
+
+    public AutomaticGunScriptLPFP gun;
+    public FPSControllerLPFP.FpsControllerLPFP player;
+    public GameObject menu_canvas;
+
     void Awake()
     {
         has_headset = new bool[N_headsets];
@@ -23,6 +30,7 @@ public class Headsets : MonoBehaviour
             has_headset[i] = false;
         }
         NoHeadset();
+        menu_canvas.SetActive(false);
     }
 
     void Update()
@@ -32,42 +40,19 @@ public class Headsets : MonoBehaviour
 
     private void ProcessInput()
     {
-        if (Input.GetKeyDown(KeyCode.H))    //Headset 0
-        {          
-            if (WichEquipped() == 0)
-            {
-                Unequip(true);
-            }
-            else
-            {
-                SetEquipped(0);
-            }
-        }
 
-        if (Input.GetKeyDown(KeyCode.J))    //Headset 1
+        if (Input.GetKeyDown(KeyCode.H))    //Headset menu
         {
-            if (WichEquipped() == 1)
+            if (menu)   // Cerrar menú
             {
-                Unequip(true);
+                CloseMenu();
             }
-            else
+            else        // Abrir menú
             {
-                SetEquipped(1);
+                OpenMenu();
             }
-        }
 
-        if (Input.GetKeyDown(KeyCode.K))    //Headset 2
-        {
-            if (WichEquipped() == 2)
-            {
-                Unequip(true);
-            }
-            else
-            {
-                SetEquipped(2);
-            }
         }
-
     }
 
     private void Unequip(bool none)
@@ -81,18 +66,6 @@ public class Headsets : MonoBehaviour
         headset_.stop(0);
 
         if (none) NoHeadset();
-    }
-
-    private int WichEquipped()
-    {
-        int i = 0;
-        while (i < N_headsets && has_headset[i] == false)
-        {
-            i++;
-        }
-
-        if (i == N_headsets) return -1;
-        else return i;
     }
 
     private void SetEquipped(int headset)
@@ -123,5 +96,45 @@ public class Headsets : MonoBehaviour
     {
         int i = WichEquipped();
         if(i != -1) SetEquipped(i);
+    }
+
+    public void SelectedHeadset (int id)
+    {
+        if (WichEquipped() == id) Unequip(true);
+        else SetEquipped(id);
+
+        CloseMenu();
+    }
+
+    private void CloseMenu()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        player.pause = false;
+        gun.pause = false;
+        menu = false;
+        menu_canvas.SetActive(false);
+    }
+
+    private void OpenMenu()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+        player.pause = true;
+        gun.pause = true;
+        menu = true;
+        menu_canvas.SetActive(true);
+    }
+
+    private int WichEquipped()
+    {
+        int i = 0;
+        while (i < N_headsets && has_headset[i] == false)
+        {
+            i++;
+        }
+
+        if (i == N_headsets) return -1;
+        else return i;
     }
 }

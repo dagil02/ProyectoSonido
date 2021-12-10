@@ -10,6 +10,9 @@ namespace FPSControllerLPFP
     public class FpsControllerLPFP : MonoBehaviour
     {
 #pragma warning disable 649
+
+        public bool pause = false;
+
         [Header("Arms")]
         [Tooltip("The transform component that holds the gun camera."), SerializeField]
         private Transform arms;
@@ -130,26 +133,29 @@ namespace FPSControllerLPFP
         /// Processes the character movement and the camera rotation every fixed framerate frame.
         private void FixedUpdate()
         {
-
-            // FixedUpdate is used instead of Update because this code is dealing with physics and smoothing.
-            RotateCameraAndCharacter();
-            MoveCharacter();
-            if (!input.Run && isrunning) //Ha dejado de correr
+            if (!pause)
             {
-                isrunning = false;
-                CancelInvoke();
-                InvokeRepeating("ProcessSteps", 0, 0.4f);
-            }
-            _isGrounded = false;
-
+                // FixedUpdate is used instead of Update because this code is dealing with physics and smoothing.
+                RotateCameraAndCharacter();
+                MoveCharacter();
+                if (!input.Run && isrunning) //Ha dejado de correr
+                {
+                    isrunning = false;
+                    CancelInvoke();
+                    InvokeRepeating("ProcessSteps", 0, 0.4f);
+                }
+                _isGrounded = false;
+            }        
         }
 
         /// Moves the camera to the character
         private void Update()
         {
-
-            arms.position = transform.position + transform.TransformVector(armPosition);
-
+            if (!pause)
+            {
+                if (Input.GetKeyDown(KeyCode.Escape)) Application.Quit();
+                arms.position = transform.position + transform.TransformVector(armPosition);
+            }
         }
 
         private void OnTriggerEnter(Collider other)
